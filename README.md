@@ -2,6 +2,18 @@
 
 This repository contains the initial stage of a student project to build a clone of the AirBnB website. This stage implements a backend interface, or console, to manage program data. Console commands allow the user to create, update, and destroy objects, as well as manage file storage. Using a system of JSON serialization/deserialization, storage is persistent between sessions.
 
+This is a clone from an existing AirBnb project that was forked from the following repository:
+
+https://github.com/justinmajetich/AirBnB_clone
+
+In this new version we will add some SQL features to our database.
+
+### Task 0 Update the existing README.md/AUTHORS file
+### Task 2 Unittest
+### Task 3 Improve Console
+### Task 4 Setup SQL
+
+
 ---
 
 <center><h3>Repository Contents by Project Task</h3> </center>
@@ -140,3 +152,5 @@ Usage: <class_name>.update(<_id>, <dictionary>)
 (hbnb) ["[User] (98bea5de-9cb0-4d78-8a9d-c4de03521c30) {'updated_at': datetime.datetime(2020, 2, 19, 21, 47, 29, 134362), 'name': 'Fred the Frog', 'age': 9, 'id': '98bea5de-9cb0-4d78-8a9d-c4de03521c30', 'created_at': datetime.datetime(2020, 2, 19, 21, 47, 29, 134343)}"]
 ```
 <br>
+
+##### will add after this point new info
