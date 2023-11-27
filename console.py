@@ -73,8 +73,8 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
-                            and type(eval(pline)) is dict:
+                    if pline[0] == '{' and pline[-1] == '}'\
+                            and type(eval(pline)) == dict:
                         _args = pline
                     else:
                         _args = pline.replace(',', '')
@@ -115,16 +115,58 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
+    ##    if not args:
+    ##        print("** class name missing **")
+    ##        return
+    ##    elif args not in HBNBCommand.classes:
+    ##        print("** class doesn't exist **")
+    ##        return
+    ##    new_instance = HBNBCommand.classes[args]()
+    ##    storage.save()
+    ##    print(new_instance.id)
+    ##    storage.save()
+    ##    before this is the old code left if for safety reasons will delete at the end
+        arg = args.split()  # Split arguments by spaces
+
+        if len(arg) == 0:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+
+        class_name = arg[0]
+
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
+
+        new_instance = HBNBCommand.classes[class_name]()
+
+        for param in arg[1:]:
+            key_value = param.split('=')
+            if len(key_value) == 2:
+                key, value = key_value[0], key_value[1]
+                # Replace underscores with spaces and remove escaped double quotes in strings
+                if value[0] == '"' and value[-1] == '"':
+                    value = value[1:-1].replace('_', ' ').replace('\\"', '"')
+                # Convert value to float if it contains a dot
+                elif '.' in value:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        continue  # Skip if conversion fails
+                # Convert value to int if it's an integer
+                else:
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        continue  # Skip if conversion fails
+
+                # Set the attribute
+                if hasattr(new_instance, key):
+                    setattr(new_instance, key, value)
+
+        storage.new(new_instance)
         storage.save()
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -272,7 +314,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] is '\"':  # check for quoted arg
+            if args and args[0] == '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -280,10 +322,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] is not ' ':
+            if not att_name and args[0] != ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] is '\"':
+            if args[2] and args[2][0] == '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
