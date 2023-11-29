@@ -2,7 +2,7 @@
 """ Place Module for HBNB project """
 import models
 from os import getenv
-from models.base_models import Base
+from models.base_model import Base
 from models.base_model import BaseModel
 from models.amenity import Amenity
 from models.review import Review
@@ -28,12 +28,12 @@ class Place(BaseModel, Base):
     __tablename__ = "places"
     city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
     user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
-    name = Column(Stering(128), nullable=False)
+    name = Column(String(128), nullable=False)
     description = Column(String(1024))
-    number_rooms = Column(Interger, default=0)
-    number_bathrooms = Comlumn(Integer, default =0)
-    max_guest = Column(Integer, default=0)
-    price_by_night = Column(Integer, default=0)
+    number_rooms = Column(int(), nullable=False, default=0)
+    number_bathrooms = Column(int(), nullable=False, default=0)
+    max_guest = Column(int(), nullable=False, default=0)
+    price_by_night = Column(int(), nullable=False, default=0)
     latitude = Column(Float)
     longitude = Column(Float)
     reviews = relationship("Review", backref="place", cascade="delete")
