@@ -33,7 +33,8 @@ class FileStorage:
         """Deletes an object from storage"""
         if obj is not None:
             key = obj.__class__.__name__ + '.' + obj.id
-            del self.all()[key]
+            if key in self.all():
+                del self.all()[key]
 
     # Task 5 (End)
     def new(self, obj):
