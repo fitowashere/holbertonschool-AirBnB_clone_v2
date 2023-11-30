@@ -17,6 +17,7 @@ class Review(BaseModel, Base):
         place_id (sqlalchemy String): The review's place id.
         user_id (sqlalchemy String): The review's user id.
         """
+
     __tablename__ = "reviews"
     text = Column(String(1024), nullable=False)
     place_id = Column(String(60), ForeignKey("place_id"), nullable=False)
