@@ -15,32 +15,26 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-# Task 5 (Start)
-    # Returns a list of objects of a given class.
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
-        if cls is not None:
-            if isinstance(cls, str):
-                cls = eval(cls)
-            cls_dict = {}
-            for k, v in self.__objects.items():
-                if isinstance(v, cls):
-                    cls_dict[k] = v
-            return cls_dict
-        return self.__objects
+        """Returns a dictionary of models currently in storage, if a class
+        is specified, it returns of objects of said class"""
+        if cls is None:
+            return FileStorage.__objects
+        else:
+            dir_same_cls = {}
+            for k, v in FileStorage.__objects.items():
+                if v.__class__ == cls:
+                    dir_same_cls[k] = v
+            return dir_same_cls
 
-    # Object provided as argument, if not None, is deleted.
     def delete(self, obj=None):
-        """Deletes an object from storage"""
-        if obj is not None:
-            key = "{}.{}".format(type(obj).__name__, obj.id)
-        if key in self.__objects:
-            del self.__objects[key]
-
-    # Task 5 (End)
-    def new(self, obj):
-        """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+        """Deletes an object from the storage"""
+        if obj is None:
+            return
+        else:
+            key = obj.__class__.__name__ + '.' + obj.id
+            if key in FileStorage.__objects:
+                del FileStorage.__objects[key]
 
     def save(self):
         """Saves storage dictionary to file"""
