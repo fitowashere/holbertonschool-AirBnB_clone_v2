@@ -10,9 +10,16 @@ class FileStorage:
 
     # Task 5 (Start)
     # Returns a list of objects of a given class.
-    def all(self):
+    def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        return FileStorage.__objects
+        if cls is None:
+            return FileStorage.__objects
+        else:
+            temp = {}
+            for key, val in FileStorage.__objects.items():
+                if cls == val.__class__:
+                    temp[key] = val
+            return temp
 
     # Object provided as argument, if not None, is deleted.
     def delete(self, obj=None):
