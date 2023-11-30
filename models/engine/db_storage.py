@@ -48,12 +48,13 @@ class DBStorage:
         aDict = {}
         objects = []
         if cls:
-            objects = self.__session.query(cls)
+            objects = self.__session.query(cls).all()
         else:
             for cls in self.classes.values():
                 objects += self.__session.query(cls).all()
         for obj in objects:
-            aDict[type(obj).__name__ + '.' + obj.id] = obj
+            key = f"{obj.__class__.__name__}.{obj.id}"
+            aDict[key] = obj.to_dict()
         return aDict
 
     def new(self, obj):

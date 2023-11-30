@@ -3,13 +3,14 @@
 import cmd
 import sys
 from models.base_model import BaseModel
-from models.__init__ import storage
+from models import storage
 from models.user import User
 from models.place import Place
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+import datetime
 
 
 class HBNBCommand(cmd.Cmd):
@@ -115,17 +116,6 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-    ##    if not args:
-    ##        print("** class name missing **")
-    ##        return
-    ##    elif args not in HBNBCommand.classes:
-    ##        print("** class doesn't exist **")
-    ##        return
-    ##    new_instance = HBNBCommand.classes[args]()
-    ##    storage.save()
-    ##    print(new_instance.id)
-    ##    storage.save()
-    ##    before this is the old code left if for safety reasons will delete at the end
         arg = args.split()  # Split arguments by spaces
 
         if len(arg) == 0:
@@ -248,15 +238,27 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all(self.classes[args]).items():
                 if k.split('.')[0] == args:
-                    print_list.append(str(v))
+                    print_list.append(self.format_obj(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
+            for k, v in storage.all().items():
+                print_list.append(self.format_obj(v))
 
         print(print_list)
 
+    def format_obj(self, obj):
+        """Formats the object to the desired string representation"""
+        obj_attrs = {k: v for k, v in obj.items() if k not in ['__class__', '_sa_instance_state']}
+
+        # Convert datetime strings to datetime objects
+        for date_attr in ['created_at', 'updated_at']:
+            if date_attr in obj_attrs:
+                date_str = obj_attrs[date_attr]
+                obj_attrs[date_attr] = datetime.datetime.fromisoformat(date_str)
+
+        return f"[{obj['__class__']}] ({obj['id']}) " + str(obj_attrs)
+    
     def help_all(self):
         """ Help information for the all command """
         print("Shows all objects, or all of a class")
