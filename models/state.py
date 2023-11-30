@@ -20,8 +20,11 @@ class State(BaseModel, Base):
         name (sqlalchemy String): The name of the State.
         cities (sqlalchemy relationship): The State-City relationship.
     """
+    # Task 6 (Start)
     __tablename__ = "states"
+    # Add new column to database called name.
     name = Column(String(128), nullable=False)
+    # Add new relationship to database called cities.
     cities = relationship("City",  backref="state", cascade="delete")
 
     if getenv("HBNB_TYPE_STORAGE") != "db":
@@ -33,3 +36,4 @@ class State(BaseModel, Base):
                 if city.state_id == self.id:
                     city_list.append(city)
             return city_list
+    # Task 6 (End)
