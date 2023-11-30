@@ -1,50 +1,54 @@
 #!/usr/bin/python3
 """Defines the BaseModel class."""
 import models
-from uuid import uuid4
+import uuid
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import String
+from sqlalchemy import Column, String, DateTime
 
+# Task 6 (Start)
 Base = declarative_base()
 
 
 class BaseModel:
-    """Defines the BaseModel class.
-
-    Attributes:
-        id (sqlalchemy String): The BaseModel id.
-        created_at (sqlalchemy DateTime): The datetime at creation.
-        updated_at (sqlalchemy DateTime): The datetime of last update.
-    """
-
-    id = Column(String(60), primary_key=True, nullable=False)
+    """A base class for all hbnb models"""
+    # id column for the database
+    id = Column(String(60), nullable=False, primary_key=True)
+    # created_at column for the database
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    # updated_at column for the database
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
-        """Initialize a new BaseModel.
-
-        Args:
-            *args (any): Unused.
-            **kwargs (dict): Key/value pairs of attributes.
         """
-        self.id = str(uuid4())
-        self.created_at = self.updated_at = datetime.utcnow()
+        If kwargs are provided, set them as attributes.
+        Otherwise, set default attributes.
+        """
         if kwargs:
             for key, value in kwargs.items():
-                if key == "created_at" or key == "updated_at":
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                if key != "__class__":
+                # & Ignore __class__ attribute
+                if key == "__class__":
+                    pass
+                # & Convert string datetime to datetime object
+                elif key == "created_at" or key == "updated_at":
+                    setattr(self, key,
+                            datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f"))
+                # & Set other attributes
+                else:
                     setattr(self, key, value)
+        else:
+            # & Set default attributes
+            self.id = str(uuid.uuid4())  # & Create a unique UUID
+            self.created_at = datetime.now()  # & Set the creation time to now
+            self.updated_at = datetime.now()  # & Set the update time to now
 
     def save(self):
         """Update updated_at with the current datetime."""
         self.updated_at = datetime.utcnow()
+        # Move this storage.new(self) to save() method
         models.storage.new(self)
         models.storage.save()
+    # Task 6 (End)
 
     def to_dict(self):
         """Return a dictionary representation of the BaseModel instance.
