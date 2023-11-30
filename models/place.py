@@ -6,11 +6,7 @@ from models.base_model import Base
 from models.base_model import BaseModel
 from models.amenity import Amenity
 from models.review import Review
-from sqlalchemy import Column
-from sqlalchemy import Float
-from sqlalchemy import String
-from sqlalchemy import Table
-from sqlalchemy import ForeignKey
+from sqlalchemy import Column, String, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship
 
 
