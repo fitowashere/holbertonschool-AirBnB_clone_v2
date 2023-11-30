@@ -15,31 +15,26 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-# Task 5 (Start)
-    # Returns a list of objects of a given class.
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
+        """Returns a dictionary of models currently in storage, if a class
+        is specified, it returns of objects of said class"""
         if cls is None:
             return FileStorage.__objects
         else:
-            temp = {}
-            for key, val in FileStorage.__objects.items():
-                if cls == val.__class__:
-                    temp[key] = val
-            return temp
+            dir_same_cls = {}
+            for k, v in FileStorage.__objects.items():
+                if v.__class__ == cls:
+                    dir_same_cls[k] = v
+            return dir_same_cls
 
-    # Object provided as argument, if not None, is deleted.
     def delete(self, obj=None):
-        """Deletes an object from storage"""
-        if obj is not None:
+        """Deletes an object from the storage"""
+        if obj is None:
+            return
+        else:
             key = obj.__class__.__name__ + '.' + obj.id
-            if key in self.all():
-                del self.all()[key]
-
-    # Task 5 (End)
-    def new(self, obj):
-        """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+            if key in FileStorage.__objects:
+                del FileStorage.__objects[key]
 
     def save(self):
         """Saves storage dictionary to file"""
@@ -62,6 +57,6 @@ class FileStorage:
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass

@@ -3,7 +3,7 @@
 import cmd
 import sys
 from models.base_model import BaseModel
-from models.__init__ import storage
+from models import storage
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -113,40 +113,52 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, line):
+    def do_create(self, args):
         """Usage: create <class> <key 1>=<value 2> <key 2>=<value 2> ...
         Create a new class instance with given keys/values and print its id.
         """
+        arg = args.split()  # Split arguments by spaces
 
-        try:
-            if not line:
-                raise SyntaxError()
-            my_list = line.split(" ")
+        if len(arg) == 0:
+            print("** class name missing **")
+            return
 
-            kwargs = {}
-            for i in range(1, len(my_list)):
-                key, value = tuple(my_list[i].split("="))
-                if value[0] == '"':
-                    value = value.strip('"').replace("_", " ")
+        class_name = arg[0]
+
+        if class_name not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
+
+        new_instance = HBNBCommand.classes[class_name]()
+
+        for param in arg[1:]:
+            key_value = param.split('=')
+            if len(key_value) == 2:
+                key, value = key_value[0], key_value[1]
+                # Replace underscores with spaces and
+                # remove escaped double quotes in strings
+                if value[0] == '"' and value[-1] == '"':
+                    value = value[1:-1].replace('_', ' ').replace('\\"', '"')
+                # Convert value to float if it contains a dot
+                elif '.' in value:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        continue  # Skip if conversion fails
+                # Convert value to int if it's an integer
                 else:
                     try:
-                        value = eval(value)
-                    except (SyntaxError, NameError):
-                        continue
-                kwargs[key] = value
+                        value = int(value)
+                    except ValueError:
+                        continue  # Skip if conversion fails
 
-            if kwargs == {}:
-                obj = eval(my_list[0])()
-            else:
-                obj = eval(my_list[0])(**kwargs)
-                storage.new(obj)
-            print(obj.id)
-            obj.save()
+                # Set the attribute
+                if hasattr(new_instance, key):
+                    setattr(new_instance, key, value)
 
-        except SyntaxError:
-            print("** class name missing **")
-        except NameError:
-            print("** class doesn't exist **")
+        storage.new(new_instance)
+        storage.save()
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
