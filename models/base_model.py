@@ -1,59 +1,65 @@
 #!/usr/bin/python3
-"""Defines the BaseModel class."""
-import models
-from uuid import uuid4
+"""This module defines a base class for all models in our hbnb clone"""
+import uuid
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import String
+from sqlalchemy import Column, Integer, String, DateTime
+from os import getenv
 
-Base = declarative_base()
-
+if getenv('HBNB_TYPE_STORAGE') == 'db':
+    Base = declarative_base()
+else:
+    Base = object
 
 class BaseModel:
-    """Defines the BaseModel class."""
-
-    id = Column(String(60), primary_key=True, nullable=False)
+    """A base class for all hbnb models"""
+    id = Column(String(60), unique=True, nullable=False, primary_key=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
-        """Initialize a new BaseModel."""
+        """Instantiates a new model"""
+        self.id = kwargs.get('id', str(uuid.uuid4()))
+        self.created_at = datetime.strptime(kwargs.get('created_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+        self.updated_at = datetime.strptime(kwargs.get('updated_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
 
-        self.id = str(uuid4())
-        self.created_at = self.updated_at = datetime.utcnow()
-        if kwargs:
+        if '__class__' in kwargs:
+            del kwargs['__class__']
+
+        if not kwargs:
+            from models import storage
+            storage.new(self)
+        else:
             for key, value in kwargs.items():
-                if key == "created_at" or key == "updated_at":
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                if key != "__class__":
-                    setattr(self, key, value)
-
-    def save(self):
-        """Update updated_at with the current datetime."""
-
-        self.updated_at = datetime.utcnow()
-        models.storage.new(self)
-        models.storage.save()
-
-    def to_dict(self):
-        """Return a dictionary representation of the BaseModel instance."""
-
-        my_dict = self.__dict__.copy()
-        my_dict["__class__"] = str(type(self).__name__)
-        my_dict["created_at"] = self.created_at.isoformat()
-        my_dict["updated_at"] = self.updated_at.isoformat()
-        my_dict.pop("_sa_instance_state", None)
-        return my_dict
-
-    def delete(self):
-        """Delete the current instance from storage."""
-        models.storage.delete(self)
+                setattr(self, key, value)
 
     def __str__(self):
-        """Return the print/str representation of the BaseModel instance."""
+        """Returns a string representation of the instance"""
+        cls = (str(type(self)).split('.')[-1]).split('\'')[0]
+        return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
 
-        d = self.__dict__.copy()
-        d.pop("_sa_instance_state", None)
-        return "[{}] ({}) {}".format(type(self).__name__, self.id, d)
+    def save(self):
+        """Updates updated_at with current time when instance is changed"""
+        from models import storage
+        self.updated_at = datetime.now()
+        storage.save()
+
+    def to_dict(self):
+        """Convert instance into dict format"""
+        dictionary = {k: v for k, v in self.__dict__.items() if k != '_sa_instance_state'}
+        dictionary['__class__'] = self.__class__.__name__
+
+        # Ensure 'created_at' and 'updated_at' are datetime objects
+        for date_attr in ['created_at', 'updated_at']:
+            date_value = getattr(self, date_attr, None)
+            if isinstance(date_value, datetime):
+                dictionary[date_attr] = date_value.isoformat()
+            elif isinstance(date_value, str):
+                # Convert string to datetime object
+                try:
+                    dictionary[date_attr] = datetime.fromisoformat(date_value).isoformat()
+                except ValueError:
+                    # Handle invalid date string
+                    dictionary[date_attr] = date_value
+
+        return dictionary
