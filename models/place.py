@@ -48,7 +48,8 @@ class Place(BaseModel, Base):
             Retrieves the reviews associated with a Place
             """
             rev = []
-            for k, v in models.storage.all().items(Review):
+            all_reviews = models.storage.all(Review)
+            for k, v in all_reviews.values():
                 cls = k.split('.')[0]
                 if cls == "Review" and v.place_.id == self.id:
                     rev.append(v)
