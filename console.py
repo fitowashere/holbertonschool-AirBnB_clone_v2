@@ -249,15 +249,25 @@ class HBNBCommand(cmd.Cmd):
 
     def format_obj(self, obj):
         """Formats the object to the desired string representation"""
-        obj_attrs = {k: v for k, v in obj.items() if k not in ['__class__', '_sa_instance_state']}
+          # Convert the object to a dictionary if it's not already
+        if not isinstance(obj, dict):
+            obj = obj.to_dict()
+            
+        # Basic attributes
+        class_name = obj.get('__class__', 'NoClass')
+        obj_id = obj.get('id', 'NoID')
 
-        # Convert datetime strings to datetime objects
-        for date_attr in ['created_at', 'updated_at']:
-            if date_attr in obj_attrs:
-                date_str = obj_attrs[date_attr]
-                obj_attrs[date_attr] = datetime.datetime.fromisoformat(date_str)
+        # Prepare attributes, converting datetime strings to datetime objects
+        formatted_attrs = {}
+        for key, value in obj.items():
+            if key in ['created_at', 'updated_at'] and value:
+                formatted_attrs[key] = datetime.datetime.fromisoformat(value).strftime('%Y-%m-%d %H:%M:%S')
+            elif key not in ['__class__', '_sa_instance_state']:
+                formatted_attrs[key] = value
 
-        return f"[{obj['__class__']}] ({obj['id']}) " + str(obj_attrs)
+        # Combine the formatted string
+        formatted_obj = f"[{class_name}] ({obj_id}) {formatted_attrs}"
+        return formatted_obj
     
     def help_all(self):
         """ Help information for the all command """
