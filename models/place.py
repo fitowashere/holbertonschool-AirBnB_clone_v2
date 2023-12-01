@@ -4,7 +4,6 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Table, Column, String, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from models.city import City
-from models.review import Review
 from os import getenv
 
 if getenv("HBNB_TYPE_STORAGE") == "db":
@@ -48,8 +47,7 @@ class Place(BaseModel, Base):
             Retrieves the reviews associated with a Place
             """
             rev = []
-            all_reviews = models.storage.all(Review)
-            for k, v in all_reviews.values():
+            for k, v in models.storage.all().items():
                 cls = k.split('.')[0]
                 if cls == "Review" and v.place_.id == self.id:
                     rev.append(v)
