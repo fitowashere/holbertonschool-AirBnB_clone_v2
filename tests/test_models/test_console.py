@@ -4,6 +4,7 @@ from console import HBNBCommand
 from models import storage
 from io import StringIO
 import sys
+import os
 
 
 class TestHBNBCommandCreate(unittest.TestCase):
@@ -72,9 +73,9 @@ class TestHBNBCommandCreate(unittest.TestCase):
         self.cli.onecmd(command)
         output = self.out.getvalue().strip()
         self.assertTrue(len(output) > 0)
-        
+
         new_instance = storage.all()["Place." + output]
-        
+
         # Verify that each attribute was correctly assigned
         self.assertEqual(new_instance.name, "Fito Was Here")
         self.assertEqual(new_instance.number_rooms, 25)
