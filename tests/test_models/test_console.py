@@ -24,7 +24,7 @@ class TestHBNBCommandCreate(unittest.TestCase):
         # Remove the created file (if any)
         try:
             os.remove('file.json')
-        except:
+        except IOError:
             pass
 
     def test_create_no_class(self):
@@ -68,8 +68,11 @@ class TestHBNBCommandCreate(unittest.TestCase):
         self.assertEqual(new_instance.latitude, 19.99)
 
     def test_create_with_multiple_parameters(self):
-        """Test 'create' with multiple parameters including string, integer, and float"""
-        command = 'create Place name="Fito_Was_Here" number_rooms=25 latitude=5.9'
+        """
+        Test 'create' with multiple parameters
+        including string, integer, and float.
+        """
+        command = 'create Place name="Fito_Was_Here" number_rooms=25'
         self.cli.onecmd(command)
         output = self.out.getvalue().strip()
         self.assertTrue(len(output) > 0)
@@ -79,7 +82,8 @@ class TestHBNBCommandCreate(unittest.TestCase):
         # Verify that each attribute was correctly assigned
         self.assertEqual(new_instance.name, "Fito Was Here")
         self.assertEqual(new_instance.number_rooms, 25)
-        self.assertAlmostEqual(new_instance.latitude, 5.9)  # Use assertAlmostEqual for floats
+        self.assertAlmostEqual(new_instance.latitude, 5.9)
+
 
 if __name__ == "__main__":
     unittest.main()
