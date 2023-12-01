@@ -18,20 +18,20 @@ class BaseModel:
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
-        """Instatntiates a new model"""
+        """Instantiates a new model"""
+        self.id = kwargs.get('id', str(uuid.uuid4()))
+        self.created_at = datetime.strptime(kwargs.get('created_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+        self.updated_at = datetime.strptime(kwargs.get('updated_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+
+        if '__class__' in kwargs:
+            del kwargs['__class__']
+
         if not kwargs:
             from models import storage
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
             storage.new(self)
         else:
-            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            del kwargs['__class__']
-            self.__dict__.update(kwargs)
+            for key, value in kwargs.items():
+                setattr(self, key, value)
 
     def __str__(self):
         """Returns a string representation of the instance"""
@@ -48,6 +48,18 @@ class BaseModel:
         """Convert instance into dict format"""
         dictionary = {k: v for k, v in self.__dict__.items() if k != '_sa_instance_state'}
         dictionary['__class__'] = self.__class__.__name__
-        dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
+
+        # Ensure 'created_at' and 'updated_at' are datetime objects
+        for date_attr in ['created_at', 'updated_at']:
+            date_value = getattr(self, date_attr, None)
+            if isinstance(date_value, datetime):
+                dictionary[date_attr] = date_value.isoformat()
+            elif isinstance(date_value, str):
+                # Convert string to datetime object
+                try:
+                    dictionary[date_attr] = datetime.fromisoformat(date_value).isoformat()
+                except ValueError:
+                    # Handle invalid date string
+                    dictionary[date_attr] = date_value
+
         return dictionary
