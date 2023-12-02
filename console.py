@@ -134,8 +134,7 @@ class HBNBCommand(cmd.Cmd):
             key_value = param.split('=')
             if len(key_value) == 2:
                 key, value = key_value[0], key_value[1]
-                # Replace underscores with spaces and
-                # remove escaped double quotes in strings
+                # Replace underscores with spaces and remove escaped double quotes in strings
                 if value[0] == '"' and value[-1] == '"':
                     value = value[1:-1].replace('_', ' ').replace('\\"', '"')
                 # Convert value to float if it contains a dot
@@ -220,7 +219,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del(storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -250,7 +249,7 @@ class HBNBCommand(cmd.Cmd):
 
     def format_obj(self, obj):
         """Formats the object to the desired string representation"""
-        # Convert the object to a dictionary if it's not already
+          # Convert the object to a dictionary if it's not already
         if not isinstance(obj, dict):
             obj = obj.to_dict()
 
@@ -262,8 +261,7 @@ class HBNBCommand(cmd.Cmd):
         formatted_attrs = {}
         for key, value in obj.items():
             if key in ['created_at', 'updated_at'] and value:
-                formatted_attrs[key] = datetime.datetime.fromisoformat
-                (value).strftime('%Y-%m-%d %H:%M:%S')
+                formatted_attrs[key] = datetime.datetime.fromisoformat(value).strftime('%Y-%m-%d %H:%M:%S')
             elif key not in ['__class__', '_sa_instance_state']:
                 formatted_attrs[key] = value
 
@@ -375,7 +373,6 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
-
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()

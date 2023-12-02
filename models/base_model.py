@@ -11,7 +11,6 @@ if getenv('HBNB_TYPE_STORAGE') == 'db':
 else:
     Base = object
 
-
 class BaseModel:
     """A base class for all hbnb models"""
     id = Column(String(60), unique=True, nullable=False, primary_key=True)
@@ -21,13 +20,8 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         """Instantiates a new model"""
         self.id = kwargs.get('id', str(uuid.uuid4()))
-        self.created_at = datetime.strptime
-        (kwargs.get('created_at', datetime.utcnow().isoformat()),
-         '%Y-%m-%dT%H:%M:%S.%f')
-
-        self.updated_at = datetime.strptime
-        (kwargs.get('updated_at', datetime.utcnow().isoformat()),
-         '%Y-%m-%dT%H:%M:%S.%f')
+        self.created_at = datetime.strptime(kwargs.get('created_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+        self.updated_at = datetime.strptime(kwargs.get('updated_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
 
         if '__class__' in kwargs:
             del kwargs['__class__']
@@ -52,8 +46,7 @@ class BaseModel:
 
     def to_dict(self):
         """Convert instance into dict format"""
-        dictionary = {k: v for k, v in self.__dict__.items
-                      () if k != '_sa_instance_state'}
+        dictionary = {k: v for k, v in self.__dict__.items() if k != '_sa_instance_state'}
         dictionary['__class__'] = self.__class__.__name__
 
         # Ensure 'created_at' and 'updated_at' are datetime objects
@@ -64,8 +57,7 @@ class BaseModel:
             elif isinstance(date_value, str):
                 # Convert string to datetime object
                 try:
-                    dictionary[date_attr] = datetime.fromisoformat(
-                        date_value).isoformat()
+                    dictionary[date_attr] = datetime.fromisoformat(date_value).isoformat()
                 except ValueError:
                     # Handle invalid date string
                     dictionary[date_attr] = date_value
