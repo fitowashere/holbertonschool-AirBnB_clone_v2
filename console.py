@@ -252,7 +252,7 @@ class HBNBCommand(cmd.Cmd):
           # Convert the object to a dictionary if it's not already
         if not isinstance(obj, dict):
             obj = obj.to_dict()
-
+            
         # Basic attributes
         class_name = obj.get('__class__', 'NoClass')
         obj_id = obj.get('id', 'NoID')
@@ -268,7 +268,7 @@ class HBNBCommand(cmd.Cmd):
         # Combine the formatted string
         formatted_obj = f"[{class_name}] ({obj_id}) {formatted_attrs}"
         return formatted_obj
-
+    
     def help_all(self):
         """ Help information for the all command """
         print("Shows all objects, or all of a class")
