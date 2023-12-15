@@ -15,8 +15,8 @@ def states_list():
     """ Route taht displays the html page of
     a list of states objects sorted by name
     """
-    states_li = storage.all(State).values()
-    return render_template('7-states_list.html', states=states_li)
+    state_li = storage.all(State).values()
+    return render_template('7-states_list.html', states=state_li)
 
 
 @app.route('/cities_by_states', strict_slashes=False)
