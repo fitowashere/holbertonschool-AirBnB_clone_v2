@@ -25,7 +25,7 @@ def c_text(text):
     return 'C {}'.format(text.replace('_', ' '))
 
 
-@app.route('/python/', defaults={'text': 'is cool'}, strict_slashes=False)  
+@app.route('/python/', defaults={'text': 'is cool'}, strict_slashes=False)
 @app.route('/python/<text>', strict_slashes=False)
 def python_text(text):
     " Create a route of /python"
@@ -48,7 +48,7 @@ def number_template(n):
 def number_odd_or_even(n):
     """creates a route of /number_odd_or_even"""
     odd_or_even = 'even' if n % 2 == 0 else 'odd'
-    return render_template('6-number_odd_or_even.html', n=n, odd_or_even=o_e)
+    return render_template('6-number_odd_or_even.html', n=n, o_e=odd_or_even)
 
 
 if __name__ == '__main__':
