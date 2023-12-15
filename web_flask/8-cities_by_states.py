@@ -1,27 +1,23 @@
 #!/usr/bin/python3
-"""
-Script that starts a Flask web application.
-"""
-from flask import Flask, render_template
+""" This module starts a Flask web application """""
+from flask import Flask
+from flask import render_template
 from models import storage
 from models.state import State
-
-
+""" Flask class and render_template method"""""
 app = Flask(__name__)
-
-
-@app.route('/cities_by_states', strict_slashes=False)
-def cities_by_states():
-    """ Route that display a HTML page with a list of cities
-    objects sorted by name """
-    city_li = storage.all(State).values()
-    return render_template('8-cities_by_states.html', states=city_li)
+app.url_map.strict_slashes = False
 
 
 @app.teardown_appcontext
-def teardown_appcontext(exception):
-    """After each request, remove the SQLAlchemy Session"""
+def teardown(self):
     storage.close()
+
+
+@app.route('/cities_by_states')
+def cities_by_states():
+    states = storage.all(State)
+    return render_template('8-cities_by_states.html', states=states)
 
 
 if __name__ == '__main__':
